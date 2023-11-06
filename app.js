@@ -1,9 +1,14 @@
 import express from 'express';
 import cors from 'cors';
 import routes from './src/routes/index.js';
-import connectDb from './config/db.js';
+import dotenv from 'dotenv';
+import connectToCluster from "./config/db.js";
+
+dotenv.config();
 
 const app = express();
+
+global.sharedMongoClient = await connectToCluster(process.env.MONGO_URI);
 
 app.use(cors());
 

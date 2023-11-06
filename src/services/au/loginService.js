@@ -1,11 +1,10 @@
 import bcrypt from 'bcrypt';
-import userModel from '../../models/user.js';
 import generateToken from "../../helpers/generateToken.js";
-import {updateRefreshToken} from "../users/userService.js";
-// mongoose.set('debug', true);
+import {getUserModel} from "../../helpers/getUserModel.js";
 
 export const loginService = async (email, password) => {
-    const user = await userModel.findUserByOneField({email: email});
+    const userModel = await getUserModel();
+    const user = await userModel.findOne({email: email});
 
     if (user === null) {
         return "Tài khoản không tồn tại trong hệ thống";
@@ -22,14 +21,9 @@ export const loginService = async (email, password) => {
         email: user.email
     };
 
-    const dataResponseLogin = {
+    return {
         access_token: generateToken(payloadToken),
         refresh_token: generateToken(payloadToken, '2d'),
         user: payloadToken
-    }
-
-    // login xong sẽ lưu refresh token vào db
-    await updateRefreshToken(payloadToken.id, dataResponseLogin.refresh_token);
-
-    return dataResponseLogin;
+    };
 }

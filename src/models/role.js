@@ -1,10 +1,11 @@
 import BaseModel from "./BaseModel.js";
 
-export default class user extends BaseModel {
+export default class role extends BaseModel {
 
     constructor() {
+
         super(
-            'users'
+            'roles'
         );
     }
 }

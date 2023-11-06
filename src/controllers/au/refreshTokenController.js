@@ -12,9 +12,7 @@ export const refreshTokenController = async (req, res) => {
             return res.status(400).send(response);
         }
 
-        const refreshToken = req.headers.authorization.replace("Bearer ", "");
-
-        const data = await refreshTokenService(refreshToken);
+        const data = await refreshTokenService(req.user);
         res.send(buildSuccessResponse(data));
     } catch (e) {
         console.log(e);

@@ -1,23 +1,16 @@
 import {MongoClient} from 'mongodb';
-import dotenv from 'dotenv';
 
-dotenv.config();
-
-const MONGO_URI = process.env.MONGO_URI;
-const DB_NAME = process.env.DB_NAME;
-
-// Connection URL
-const client = new MongoClient(MONGO_URI);
-
-const connectDb = async () => {
+export default async function connectToCluster(uri) {
+    let mongoClient;
     try {
-        console.log('hihi')
-        await client.connect();
-        console.log('Connected successfully to server');
-        return client.db(DB_NAME);
-    } catch (err) {
-        console.error(`Error: ${err.message}`);
-        process.exit(1);
+        mongoClient = new MongoClient(uri);
+        console.log('Connecting to MongoDB Atlas cluster...');
+        await mongoClient.connect();
+        console.log('Successfully connected to MongoDB Atlas!');
+
+        return mongoClient;
+    } catch (error) {
+        console.error('Connection to MongoDB Atlas failed!', error);
+        process.exit();
     }
 };
-export default connectDb;

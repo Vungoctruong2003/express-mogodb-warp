@@ -1,20 +1,16 @@
-import userModel from '../../models/user.js';
 import generateToken from "../../helpers/generateToken.js";
-import {updateRefreshToken} from "../users/userService.js";
 
-export const refreshTokenService = async (refreshToken) => {
+export const refreshTokenService = async (user) => {
 
-    const user = await userModel.findUserByOneField({refresh_token: refreshToken});
-
-    if (user == null) {
-        return "Refresh token không tồn tại trong hệ thống";
-    }
-
-    const newToken = {
-        access_token: generateToken(user._id),
-        refresh_token: generateToken(user._id, '2d')
+    const payloadToken = {
+        id: user._id,
+        name: user.name,
+        phone: user.phone,
+        email: user.email
     };
 
-    await updateRefreshToken(user._id, newToken.refresh_token);
-    return newToken;
+    return {
+        access_token: generateToken(payloadToken),
+        refresh_token: generateToken(payloadToken, '2d')
+    };
 }

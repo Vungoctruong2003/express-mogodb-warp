@@ -2,7 +2,7 @@ import {
     deleteUserByIdService,
     detailUserByIdService,
     editUserByIdService,
-    getAllUserService, getRoleOfUserByIdService, setRoleForUserService
+    getAllUserService, setRoleForUserService
 } from "../../services/users/userService.js";
 import {buildSuccessResponse} from "../../ultils/successResponse.js";
 import {buildErrorResponse} from "../../ultils/errorResponse.js";
@@ -12,6 +12,7 @@ export const getAllUserController = async (req, res) => {
     try {
         const data = await getAllUserService(
             req.query.keySearch,
+            req.query.roleSearch,
             req.query.perpage ?? process.env.DEFAULT_PERPAGE,
             req.query.page ?? process.env.DEFAULT_CURRENT_PAGE
         );
@@ -36,10 +37,13 @@ export const deleteUserController = async (req, res) => {
 
 export const detailUserController = async (req, res) => {
     try {
-        const data = await detailUserByIdService(
+        let data = await detailUserByIdService(
             req.query.id
         );
-        res.send(buildSuccessResponse(data));
+        if (data.length === 0) {
+            data = {}
+        }
+        res.send(buildSuccessResponse(data[0]));
     } catch (e) {
         console.log(e);
         return buildErrorResponse();
@@ -49,35 +53,23 @@ export const detailUserController = async (req, res) => {
 export const editUserController = async (req, res) => {
     try {
 
-        await editUserByIdService(
+        const dataEdit = await editUserByIdService(
             req.body.id,
             req.body.dataEditUser,
         );
+
+        if (typeof dataEdit == "string") {
+            return res.send(buildErrorResponse({}, dataEdit));
+        }
 
         const data = await detailUserByIdService(
             req.body.id,
         );
 
-        res.send(buildSuccessResponse(data));
-    } catch (e) {
-        console.log(e);
-        return buildErrorResponse();
-    }
-}
-export const getRole = async (req, res) => {
-    try {
-        const errors = validationResult(req);
+        const userEdit = data[0]
+        userEdit.role_name = userEdit.role_users.map(role => role.name).join(', ');
 
-        if (!errors.isEmpty()) {
-            const response = buildErrorResponse({}, errors.array());
-            return res.status(400).send(response);
-        }
-
-        const data = await getRoleOfUserByIdService(
-            req.body.id,
-        );
-
-        res.send(buildSuccessResponse(data));
+        res.send(buildSuccessResponse(userEdit));
     } catch (e) {
         console.log(e);
         return buildErrorResponse();

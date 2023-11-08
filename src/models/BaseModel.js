@@ -37,8 +37,8 @@ export default class BaseModel {
             .toArray();
     }
 
-    async getAll() {
-        return await this.collection.find({deleted_at: null})
+    async getAll(option = {}) {
+        return await this.collection.find({deleted_at: null, ...option})
             .toArray();
     }
 }

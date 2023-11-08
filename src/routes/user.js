@@ -3,11 +3,10 @@ import {
     deleteUserController,
     detailUserController,
     editUserController,
-    getAllUserController, getRole, setRoleForUserController
+    getAllUserController, setRoleForUserController
 } from "../controllers/users/userController.js";
 import {authenticateJWT} from "../middlewares/authMiddleware.js";
 import {createValidate} from "../validators/role/setRoleForUser.js";
-import {getRoleUserByIdValidate} from "../validators/user/getRoleUserById.js";
 import {isRoleAdmin} from "../middlewares/isRoleAdmin.js";
 
 
